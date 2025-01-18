@@ -182,17 +182,20 @@ function waitForElement(selector) {
         observer.observe(document.body, { childList: true, subtree: true });
     });
 }
-    let count = 0;
+    
     async function executeRefundSequence(n) {
-        
+        let count = 0;
         if (count != 0) {
             await waitForElement('.teal.item.tw-flex.tw-w-full.tw-justify-between'); 
         }
         count++;
         toAwaitingRefunds();
     
+        // while loop optimization for multiple refunds?
         await waitForElement('.ui.fluid.button.ui.basic.label'); 
         beginAwaitingRefunds(n);
+
+        const multipleRefunds = document.querySelectorAll('.disabled.link.step');
     
         await waitForElement('.ui.teal.tiny.label.tw-ml-2'); 
 
@@ -200,9 +203,7 @@ function waitForElement(selector) {
         // Future update should be to skip over it till a manager can finish these.
         // Reason to skip currently is I could not figure out a way to prevent errors AND optimize it with the limited time.
         const refundAmount = document.querySelector('.sub.header').textContent.trim();
-        console.log(refundAmount);
         const number = parseInt(refundAmount.match(/\d+/)[0]);
-        console.log(number);
         // Checking if the amount is over 200
         if (number >= 200) {
             console.log("its more");
@@ -211,7 +212,6 @@ function waitForElement(selector) {
             console.log("It's less"); 
         }
 
-        
         initiateSuggestedRefund();
 
         /* THIS COMMENT BRACKET IS FOR TESTING WHEN THE REFUND ISNT ENOUGH
@@ -228,8 +228,47 @@ function waitForElement(selector) {
         await waitForElement('.ui.green.tiny.button'); 
         completeRefund();
     
-        //await waitForElement('button.ui.green.mini.button:has(i.checkmark.icon)');
-        //finalizeRefund();
+        await waitForElement('button.ui.green.mini.button:has(i.checkmark.icon)');
+        finalizeRefund();
+
+        if (multipleRefunds) {
+            console.log("THERE IS A MULTI-REFUND");
+        }
+
+        const numOfRefunds = multipleRefunds.length;
+        if (multipleRefunds && numOfRefunds != 0) {
+            for (let i = 0; i < numOfRefunds; i++) {
+                const refundAmount = document.querySelector('.sub.header').textContent.trim();
+                const number = parseInt(refundAmount.match(/\d+/)[0]);
+
+                // Checking if the amount is over 200
+                if (number >= 200) {
+                    //console.log("its more");
+                    throw new Error("It's over $200! Please get a manager.");
+                } else {
+                    //console.log("It's less"); 
+                }
+
+                initiateSuggestedRefund();
+
+                /* THIS COMMENT BRACKET IS FOR TESTING WHEN THE REFUND ISNT ENOUGH
+                // Waiting long enough to determine if the payment amount has been met
+                await waitFor(1000); //THIS VALUE CAN CHANGE, it's just 1000 is the safe side
+
+                // If original payment method isn't enough, add store credit
+                const refundAmountLeft = document.querySelector('.sub.header');
+                if (refundAmountLeft && refundAmountLeft.textContent.trim() !== "$0.00 remaining") {
+                    storeCreditRefund();
+                }
+                */
+            
+                await waitForElement('.ui.green.tiny.button'); 
+                completeRefund();
+            
+                await waitForElement('button.ui.green.mini.button:has(i.checkmark.icon)');
+                finalizeRefund();
+            }
+        }
     }
 
     // Function to wait for a specified amount of time
@@ -247,5 +286,5 @@ function waitForElement(selector) {
         console.log('All iterations completed!');
     }
     
-    // Start the refund process for 5 iterations
-    runRefundProcess(5);
+    // Start the refund process for n iterations
+    runRefundProcess(1);
