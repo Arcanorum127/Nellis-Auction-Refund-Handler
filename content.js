@@ -188,7 +188,6 @@ function waitForElement(selector) {
         if (count != 0) {
             await waitForElement('.teal.item.tw-flex.tw-w-full.tw-justify-between'); 
         }
-        console.log(count);
         count++;
         toAwaitingRefunds();
     
@@ -196,13 +195,46 @@ function waitForElement(selector) {
         beginAwaitingRefunds(n);
     
         await waitForElement('.ui.teal.tiny.label.tw-ml-2'); 
+
+        // This code is for determining if the refund is over $200, if it is, the extension is terminated.
+        // Future update should be to skip over it till a manager can finish these.
+        // Reason to skip currently is I could not figure out a way to prevent errors AND optimize it with the limited time.
+        const refundAmount = document.querySelector('.sub.header').textContent.trim();
+        console.log(refundAmount);
+        const number = parseInt(refundAmount.match(/\d+/)[0]);
+        console.log(number);
+        // Checking if the amount is over 200
+        if (number >= 200) {
+            console.log("its more");
+            throw new Error("It's over $200! Please get a manager.");
+        } else {
+            console.log("It's less"); 
+        }
+
+        
         initiateSuggestedRefund();
+
+        /* THIS COMMENT BRACKET IS FOR TESTING WHEN THE REFUND ISNT ENOUGH
+        // Waiting long enough to determine if the payment amount has been met
+        await waitFor(1000); //THIS VALUE CAN CHANGE, it's just 1000 is the safe side
+
+        // If original payment method isn't enough, add store credit
+        const refundAmountLeft = document.querySelector('.sub.header');
+        if (refundAmountLeft && refundAmountLeft.textContent.trim() !== "$0.00 remaining") {
+            storeCreditRefund();
+        }
+        */
     
         await waitForElement('.ui.green.tiny.button'); 
         completeRefund();
     
-        await waitForElement('button.ui.green.mini.button:has(i.checkmark.icon)');
-        finalizeRefund();
+        //await waitForElement('button.ui.green.mini.button:has(i.checkmark.icon)');
+        //finalizeRefund();
+    }
+
+    // Function to wait for a specified amount of time
+    function waitFor(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
     
     // Function to run the refund process for a specified number of iterations
@@ -216,4 +248,4 @@ function waitForElement(selector) {
     }
     
     // Start the refund process for 5 iterations
-    runRefundProcess(3);
+    runRefundProcess(5);
