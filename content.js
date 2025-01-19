@@ -2,41 +2,29 @@
 Name: Brice Blanchard
 Date: 1/12/2025
 Project: Nellis Auction Refund Handler
-Version: 1.1
+Version: 1.9
 */
 
 /*
-CONTENT LEFT TO IMPLEMENT
-    Add implementation of checking for full refund value achieved
-        -> If unfilled then click store credit fill button
-    Add implementation of clicking refund button
-    From there, I should be taken back to the returns page
-        -> Wait for load, click awaiting refunds button
-    Rinse and repeat (Set max limit for testing purposes)/(Need to build unit testing)
-*/
-/*
-EDGE CASES TO HANDLE
-    If original payment isn't enough to fufill amount required -> fill rest with store credit
-    If multiple original payment methods are provided -> Always select first listed method (should be handled but needs testing)
-    Cargo forced logout should trigger timeout (5 seconds) ** Might need to add specifications to awaiting refund button press to handle timeout prevention
-        -> Check login screen HTML
-    If there are multiple return receipts under the same customer account, then the script should detect that and fill the other receipts as well
-        -> If there is a class containing disabled link step, then that means that there are multiple receipts on the order and that should be handled accordingly
-*/
-/*
-KNOWN ISSUES/ERRORS
-    If for some reason the refund is unable to be processed as normal, the script will timeout
-        -> The refund will need to be handled manually and the script restarted
-            -> Possible handling of issues involves 
-                A. Implementing error handling and edge cases to resolve issues 
-                B. Initiate a popup or notification to alert manager that intervention is required
-                C. Attempt again, upon second failure proceed to next return. 
-                Ideal solution combines all 3, implement A, upon failure proceed to C until multiple problematic refunds are detected, then lastly B to alert manager that attention is needed
-    Page taking too long to load will cause timeout in script (5 seconds)
+TODO 
+
+Fix multiple refunds issue, error is marked
+**SHOULD BE DONE, NEED TO FIND TEST CASE** Fix store credit fill as it submits and then need to fill the amount left over with store credit
+**DONE**  Fix issue with count variable already being initialized upon second execution
+**DONE** Add that if there aren't any buttons but store credit then to just fill store credit
+
+Skipping over what I can't handle (errors and $200+) v
+Global count variable to start buttons at (for bad orders, if I can't handle it, add 1 to counter, go back to main page, and restart.)
+Stop if counter is ever above 20 and/or there aren't enough refunds left over.
+
 */
 
-// Anything over 200 left for manager
-// Credit card is cancelled error
+/*
+ERRORS:
+    Cannot read properties of null (reading 'slice')
+        Console Error: performance-BDij6WjE.js:4 
+        POST https://cargo.nellisauction.com/api/refunds/creditCard 500 (Internal Server Error)
+*/
 
 /* Reference Dictionary
     Awaiting Returns Page - "teal item tw-flex tw-w-full tw-justify-between"
@@ -63,32 +51,22 @@ function toAwaitingRefunds() {
 // Function attempts to initiate the refund process as long as there is a valid entry
 function beginAwaitingRefunds(x) {
     const buttons = document.querySelectorAll(".ui.fluid.button.ui.basic.label");
-    if (buttons.length >= 3) {
-        if (x % 3 == 0) {
+    if (buttons.length >= 5) {
+        if (x % 5 == 0) {
             buttons[0].click();
-        } else if (x % 3 == 1) {
+        } else if (x % 5 == 1) {
             buttons[1].click();
-        } else if (x % 3 == 2) {
+        } else if (x % 5 == 2) {
             buttons[2].click();
+        } else if (x % 5 == 3) {
+            buttons[3].click();
+        } else if (x % 5 == 4) {
+            buttons[4].click();
         }
     } else {
         buttons[0].click();
     }
 }
-
-/*
-function beginAwaitingRefunds() {
-    const button = document.querySelector(".ui.fluid.button.ui.basic.label");
-    if (button) {
-        button.click();
-        // For Dev Purposes
-        //console.log("Approval of returns initiated");
-    } else {
-        // For Dev Purposes
-        //console.log("Failed to initiate valid customer refund");
-    }
-}
-    */
 
 // Function checks suggested refund method and initiates the refund
 function initiateSuggestedRefund() {
@@ -107,8 +85,8 @@ function initiateSuggestedRefund() {
                 storeCreditRefund();
             // If suggested refund is listed as original payment
             } else if (icon.classList.contains("credit", "card", "icon")) {
-                // Run the original payment refund function
-                originalPaymentRefund();
+                    // Run the original payment refund function
+                    originalPaymentRefund();
             } else {
                 // For Dev Purposes
                 //console.log("The icon class does not match Bitcoin or Credit Card.");
@@ -126,9 +104,9 @@ function initiateSuggestedRefund() {
 
 function storeCreditRefund() {
     // Kept it simple as the first button is always store credit
-    const firstFillButton = document.querySelector(".ui.blue.tiny.basic.button.tw-mr-0");
-    if (firstFillButton) {
-        firstFillButton.click();
+    const storeCredButton = document.querySelector(".ui.blue.tiny.basic.button.tw-mr-0");
+    if (storeCredButton) {
+        storeCredButton.click();
         // For Dev Purposes
         //console.log("Filled store credit");
     } else {
@@ -146,6 +124,7 @@ function originalPaymentRefund() {
         // For Dev Purposes
         //console.log("Filled original payment");
     } else {
+        storeCreditRefund();
         // For Dev Purposes
         //console.log("Original payment button not found");
     }
@@ -182,33 +161,109 @@ function waitForElement(selector) {
         observer.observe(document.body, { childList: true, subtree: true });
     });
 }
-    let count = 0;
+    //let count = 0;
     async function executeRefundSequence(n) {
-        
-        if (count != 0) {
+        if (n != 0) {
             await waitForElement('.teal.item.tw-flex.tw-w-full.tw-justify-between'); 
         }
-        console.log(count);
-        count++;
+
+        console.log("Counter = " + n)
+        //count++;
         toAwaitingRefunds();
     
+        // while loop optimization for multiple refunds?
         await waitForElement('.ui.fluid.button.ui.basic.label'); 
         beginAwaitingRefunds(n);
+
+        const multipleRefunds = Array.from(document.querySelectorAll('.disabled.link.step'));
     
         await waitForElement('.ui.teal.tiny.label.tw-ml-2'); 
+        await waitFor(1000);
+
+        // This code is for determining if the refund is over $200, if it is, the extension is terminated.
+        // Future update should be to skip over it till a manager can finish these.
+        // Reason to skip currently is I could not figure out a way to prevent errors AND optimize it with the limited time.
+        const refundAmount = document.querySelector('.sub.header').textContent.trim();
+        const number = parseInt(refundAmount.match(/\d+/)[0]);
+        // Checking if the amount is over 200
+        if (number >= 200) {
+            console.log("It's over $200! Please get a manager.");
+            throw new Error("It's over $200! Please get a manager.");
+        } else {
+            //console.log("It's less"); 
+        }
+
         initiateSuggestedRefund();
 
-        // If original payment method isn't enough, add store credit
-        const refundAmount = document.querySelector('.sub.header');
-        if (refundAmount && refundAmount.textContent.trim() !== "$0.00 remaining") {
-            storeCreditRefund();
-        }
-    
+
+        // If the suggested method is original payment, yet there is only a store credit button, then fill store credit and proceed
+        const refundAmountLeft = document.querySelector('.sub.header');
         await waitForElement('.ui.green.tiny.button'); 
         completeRefund();
     
-        //await waitForElement('button.ui.green.mini.button:has(i.checkmark.icon)');
-        //finalizeRefund();
+        await waitForElement('button.ui.green.mini.button:has(i.checkmark.icon)');
+        finalizeRefund();
+
+        // THIS COMMENT BRACKET IS FOR TESTING WHEN THE REFUND ISNT ENOUGH
+        // Waiting long enough to determine if the payment amount has been met
+        await waitFor(1000); //THIS VALUE CAN CHANGE, it's just 1000 is the safe side
+
+        
+        // If original payment method isn't enough, add store credit
+        if (refundAmountLeft && refundAmountLeft.textContent.trim() !== "$0.00 remaining" && refundAmountLeft.textContent.includes('remaining')) {
+            console.log("store credit needed");
+            storeCreditRefund();
+            await waitForElement('.ui.green.tiny.button'); 
+            completeRefund();
+    
+            await waitForElement('button.ui.green.mini.button:has(i.checkmark.icon)');
+            finalizeRefund();
+        }
+        
+
+        const numOfRefunds = multipleRefunds.length;
+        console.log("There are multiple refunds: " + multipleRefunds);
+        console.log("Number of refunds: " + numOfRefunds); // issue is here
+        if (multipleRefunds && numOfRefunds != 0) {
+            console.log("THERE IS A MULTI-REFUND");
+            await waitFor(2000);
+            for (let i = 0; i < numOfRefunds; i++) {
+                const refundAmount = document.querySelector('.sub.header').textContent.trim();
+                const number = parseInt(refundAmount.match(/\d+/)[0]);
+
+                // Checking if the amount is over 200
+                if (number >= 200) {
+                    throw new Error("It's over $200! Please get a manager.");
+                } else {
+                }
+
+                initiateSuggestedRefund();
+
+                /* THIS COMMENT BRACKET IS FOR TESTING WHEN THE REFUND ISNT ENOUGH
+                // Waiting long enough to determine if the payment amount has been met
+                await waitFor(1000); //THIS VALUE CAN CHANGE, it's just 1000 is the safe side
+
+                // If original payment method isn't enough, add store credit
+                const refundAmountLeft = document.querySelector('.sub.header');
+                if (refundAmountLeft && refundAmountLeft.textContent.trim() !== "$0.00 remaining") {
+                    storeCreditRefund();
+                }
+                */
+            
+                await waitForElement('.ui.green.tiny.button'); 
+                completeRefund();
+            
+                await waitForElement('button.ui.green.mini.button:has(i.checkmark.icon)');
+                finalizeRefund();
+
+                //await waitFor(750);
+            }
+        }
+    }
+
+    // Function to wait for a specified amount of time
+    function waitFor(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
     
     // Function to run the refund process for a specified number of iterations
@@ -221,5 +276,5 @@ function waitForElement(selector) {
         console.log('All iterations completed!');
     }
     
-    // Start the refund process for 5 iterations
-    runRefundProcess(3);
+    // Start the refund process for n iterations
+    runRefundProcess(10);

@@ -2,7 +2,7 @@
 Name: Brice Blanchard
 Date: 1/12/2025
 Project: Nellis Auction Refund Handler
-Version: 1.1
+Version: 1.9
 */
 
 // Listener for when the extension icon is clicked
