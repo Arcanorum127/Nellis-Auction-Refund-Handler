@@ -171,21 +171,21 @@ function waitForElement(selector) {
         //const multipleRefunds = Array.from(document.querySelectorAll('.disabled.link.step'));
     
         await waitForElement('.ui.teal.tiny.label.tw-ml-2'); 
-        await waitFor(1000);
+        await waitFor(1500);
 
         // This code runs through the refunds and will repeat if there are multiple refunds for one customer
         const refundsNum = document.querySelector('.ui.small.fluid.vertical.steps').querySelectorAll('a').length;
-        console.log(refundsNum);
+        //console.log(refundsNum);
         for (let ii = 0; ii < refundsNum; ii++) {
 
-            // This code is for determining if the refund is over $200, if it is, the extension is terminated.
+            // This code is for determining if the refund is over $300, if it is, the extension is terminated.
             // Future update should be to skip over it till a manager can finish these or till permission is given.
             const refundAmount = document.querySelector('.sub.header').textContent.trim();
             const number = parseInt(refundAmount.match(/\d+/)[0]);
-            // Checking if the amount is over 200
-            if (number >= 200) {
-                console.log("It's over $200! Please get a manager.");
-                throw new Error("It's over $200! Please get a manager.");
+            // Checking if the amount is over 300
+            if (number >= 300) {
+                console.log("It's over $300! Please get a manager.");
+                throw new Error("It's over $300! Please get a manager.");
             } else {
                 //console.log("It's less"); 
             }
@@ -202,12 +202,12 @@ function waitForElement(selector) {
             finalizeRefund();
 
             // Waiting long enough to determine if the payment amount has been met
-            await waitFor(1500); //THIS VALUE CAN CHANGE, it's just 1500 is the safe side
+            await waitFor(1300); //THIS VALUE CAN CHANGE, it's just 1500 is the safe side
 
             
             // If original payment method isn't enough, add store credit
             if (refundAmountLeft && refundAmountLeft.textContent.trim() !== "$0.00 remaining" && refundAmountLeft.textContent.includes('remaining')) {
-                console.log("store credit needed");
+                //console.log("store credit needed");
                 storeCreditRefund();
                 await waitForElement('.ui.green.tiny.button'); 
                 completeRefund();
@@ -235,4 +235,4 @@ function waitForElement(selector) {
     }
     
     // Start the refund process for n iterations
-    runRefundProcess(10);
+    runRefundProcess(50);
