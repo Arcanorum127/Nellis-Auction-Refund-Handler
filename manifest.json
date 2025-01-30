@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
     "name": "Nellis Auction Refund Handler",
-    "version": "2.0",
-    "description": "Automate review and manager approval of Nellis Auction refunds.",
+    "version": "2.1",
+    "description": "Automate the process of Nellis Auction refunds within defined constraints.",
     "permissions": ["scripting", "activeTab"],
     "host_permissions": ["<all_urls>"],
     "background": {

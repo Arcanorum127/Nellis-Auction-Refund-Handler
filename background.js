@@ -1,8 +1,8 @@
 /* 
 Name: Brice Blanchard
-Date: 1/18/2025
+Date: 1/30/2025
 Project: Nellis Auction Refund Handler
-Version: 2.0
+Version: 2.1
 */
 
 // Listener for when the extension icon is clicked

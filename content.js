@@ -1,24 +1,25 @@
 /*
 Name: Brice Blanchard
-Date: 1/18/2025
+Date: 1/30/2025
 Project: Nellis Auction Refund Handler
-Version: 2.0
+Version: 2.1
 */
 
 /*
-TODO 
-
-Skipping over what I can't handle (errors and $200+) v (rn causes extension to crash which is fine)
-Global count variable to start buttons at (for bad orders, if I can't handle it, add 1 to counter, go back to main page, and restart.)
-Stop if counter is ever above 20 and/or there aren't enough refunds left over.
-
+Current Concerns:
+    When I am redirected to the awaiting refunds page, will it negate the currently injected content scrript?
+    If so how will this affect the refund handler, further tests are required.
 */
 
 /*
 ERRORS:
+*Both Errors should be partially addressed if the skip works)
     Cannot read properties of null (reading 'slice')
         Console Error: performance-BDij6WjE.js:4 
         POST https://cargo.nellisauction.com/api/refunds/creditCard 500 (Internal Server Error)
+
+    Too Many Requests 
+        429 Error
 */
 
 /* Reference Dictionary
@@ -31,6 +32,13 @@ ERRORS:
     Refund Button - "ui.green.tiny.button"
     Refund Approval Button - "button.ui.green.mini.button:has(i.checkmark.icon)"
 */
+
+// Initialization
+let timeoutID;
+let redirectCount = 0;
+const redirectURL = "https://cargo.nellisauction.com/operations/returns?tab=awaitingProcessing";
+const refundsToProcess = 200;
+const timeTillTimeout = 30000; // 30 Seconds
 
 // Attempts to bring the extension to the awaiting refunds page
 function toAwaitingRefunds() {
@@ -46,17 +54,17 @@ function toAwaitingRefunds() {
 // Function attempts to initiate the refund process as long as there is a valid entry
 function beginAwaitingRefunds(x) {
     const buttons = document.querySelectorAll(".ui.fluid.button.ui.basic.label");
-    if (buttons.length >= 5) {
+    if (buttons.length + redirectCount >= 5) {
         if (x % 5 == 0) {
-            buttons[0].click();
+            buttons[0 + redirectCount].click();
         } else if (x % 5 == 1) {
-            buttons[1].click();
+            buttons[1 + redirectCount].click();
         } else if (x % 5 == 2) {
-            buttons[2].click();
+            buttons[2 + redirectCount].click();
         } else if (x % 5 == 3) {
-            buttons[3].click();
+            buttons[3 + redirectCount].click();
         } else if (x % 5 == 4) {
-            buttons[4].click();
+            buttons[4 + redirectCount].click();
         }
     } else {
         buttons[0].click();
@@ -182,12 +190,12 @@ function waitForElement(selector) {
             // Future update should be to skip over it till a manager can finish these or till permission is given.
             const refundAmount = document.querySelector('.sub.header').textContent.trim();
             const number = parseInt(refundAmount.match(/\d+/)[0]);
-            // Checking if the amount is over 300
-            if (number >= 300) {
-                console.log("It's over $300! Please get a manager.");
-                throw new Error("It's over $300! Please get a manager.");
-            } else {
-                //console.log("It's less"); 
+            // Checking if the amount is over 800
+            if (number >= 800) {
+                console.log("It's over $800! Skipping Refund!");
+                resetTimeout();
+                timeoutRedirect();
+                //throw new Error("It's over $800! Please get a manager.");
             }
 
             initiateSuggestedRefund();
@@ -227,12 +235,34 @@ function waitForElement(selector) {
     // Function to run the refund process for a specified number of iterations
     async function runRefundProcess(iterations) {
         for (let i = 0; i < iterations; i++) {
+            resetTimeout();
             console.log(`Starting iteration: ${i + 1}`);
             await executeRefundSequence(i); // Wait for the sequence to complete before the next iteration
             console.log(`Completed iteration: ${i + 1}`);
+            await waitFor(300); // Hopefully enough time to negate 429 Errors
         }
         console.log('All iterations completed!');
     }
+
+    // Will reload and redirect to awaiting refunds page
+    async function timeoutRedirect() {
+        redirectCount++;
+        resetTimeout();
+        window.location.href = redirectURL;
+        await waitFor(7000); // 7 Seconds
+        resetTimeout();
+    }
+
+    function resetTimeout() {
+        clearTimeout(timeoutID);
+        timeoutID = setTimeout(redirectURL, timeTillTimeout); 
+    }
+
+    // Every time a click is detected, reset the timeout (should include extension clicks)
+    // Actually may not need, may just want to proc if any refund process takes longer than 30 seconds?
+    //window.addEventListener("click", resetTimeout);
     
     // Start the refund process for n iterations
-    runRefundProcess(50);
+    runRefundProcess(refundsToProcess);
+
+    // Alternatively I could do while redirectCount <= n if I want it to keep running till it runs into n refunds that require manual approval
