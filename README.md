@@ -17,6 +17,9 @@ ERRORS:
     Too Many Requests 
         429 Error
 
+Minified React 418 
+    https://react.dev/errors/418?invariant=418
+
 
  Reference Dictionary
     Awaiting Returns Page - "teal item tw-flex tw-w-full tw-justify-between"
