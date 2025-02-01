@@ -5,34 +5,6 @@ Project: Nellis Auction Refund Handler
 Version: 2.1
 */
 
-/*
-Current Concerns:
-    When I am redirected to the awaiting refunds page, will it negate the currently injected content scrript?
-    If so how will this affect the refund handler, further tests are required.
-*/
-
-/*
-ERRORS:
-*Both Errors should be partially addressed if the skip works)
-    Cannot read properties of null (reading 'slice')
-        Console Error: performance-BDij6WjE.js:4 
-        POST https://cargo.nellisauction.com/api/refunds/creditCard 500 (Internal Server Error)
-
-    Too Many Requests 
-        429 Error
-*/
-
-/* Reference Dictionary
-    Awaiting Returns Page - "teal item tw-flex tw-w-full tw-justify-between"
-    Awaiting Refunds button - "ui.fluid.button.ui.basic.label"
-    Suggested Method label - "ui.teal.tiny.label.tw-ml-2"
-        Store Credit - "bitcoin class icon"
-        Original Payment - "credit card icon" 
-    Fill Amount Button - ".ui.blue.tiny.basic.button.tw-mr-0"
-    Refund Button - "ui.green.tiny.button"
-    Refund Approval Button - "button.ui.green.mini.button:has(i.checkmark.icon)"
-*/
-
 // Initialization
 let timeoutID;
 let redirectCount = 0;
@@ -248,14 +220,17 @@ function waitForElement(selector) {
     async function timeoutRedirect() {
         redirectCount++;
         resetTimeout();
-        window.location.href = redirectURL;
+        location.replace(redirectURL);
         await waitFor(7000); // 7 Seconds
         resetTimeout();
     }
 
+    // Clear and then reinitiate timeout countdown
     function resetTimeout() {
-        clearTimeout(timeoutID);
-        timeoutID = setTimeout(redirectURL, timeTillTimeout); 
+        clearTimeout(timeoutID); // Clear any existing timeout
+        timeoutID = setTimeout(() => {
+            timeoutRedirect(); // Redirect after the timeout
+        }, timeTillTimeout); // Set a new timeout
     }
 
     // Every time a click is detected, reset the timeout (should include extension clicks)
