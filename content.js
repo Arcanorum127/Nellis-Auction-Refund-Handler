@@ -211,7 +211,7 @@ function waitForElement(selector) {
             console.log(`Starting iteration: ${i + 1}`);
             await executeRefundSequence(i); // Wait for the sequence to complete before the next iteration
             console.log(`Completed iteration: ${i + 1}`);
-            await waitFor(300); // Hopefully enough time to negate 429 Errors
+            await waitFor(350); // Hopefully enough time to negate 429 Errors
         }
         console.log('All iterations completed!');
     }
@@ -219,10 +219,10 @@ function waitForElement(selector) {
     // Will reload and redirect to awaiting refunds page
     async function timeoutRedirect() {
         redirectCount++;
-        resetTimeout();
         location.replace(redirectURL);
         await waitFor(7000); // 7 Seconds
         resetTimeout();
+        console.log("Redirect " + redirectCount + " Initiated.");
     }
 
     // Clear and then reinitiate timeout countdown
