@@ -15,10 +15,10 @@
     "service_worker": "background.js"
   },
   "icons": {
-    "16": "icons/NA-RH-active-16x16.png",
-    "32": "icons/NA-RH-active-32x32.png",
-    "48": "icons/NA-RH-active-48x48.png",
-    "128": "icons/NA-RH-active-128x128.png"
+    "16": "icons/NA-RH-inactive-16x16.png",
+    "32": "icons/NA-RH-inactive-32x32.png",
+    "48": "icons/NA-RH-inactive-48x48.png",
+    "128": "icons/NA-RH-inactive-128x128.png"
   },
   "action": {
     "default_title": "Nellis Auction Refund Handler"
