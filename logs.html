@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nellis Auction Refund Handler - Logs</title>
+    <link rel="stylesheet" href="logs.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Nellis Auction Refund Handler</h1>
+            <h2>Log Viewer</h2>
+        </header>
+
+        <main>
+            <section class="controls-section">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search logs...">
+                    <button id="search-button" class="primary-button">Search</button>
+                </div>
+                
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label for="level-filter">Log Level:</label>
+                        <select id="level-filter">
+                            <option value="all">All Levels</option>
+                            <option value="DEBUG">Debug</option>
+                            <option value="INFO">Info</option>
+                            <option value="WARN">Warning</option>
+                            <option value="ERROR">Error</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="date-range">Time Range:</label>
+                        <select id="time-range">
+                            <option value="all">All Time</option>
+                            <option value="hour">Last Hour</option>
+                            <option value="day">Last 24 Hours</option>
+                            <option value="week">Last Week</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" id="custom-time-container" style="display: none;">
+                        <div class="date-inputs">
+                            <div class="date-input">
+                                <label for="start-time">From:</label>
+                                <input type="datetime-local" id="start-time">
+                            </div>
+                            <div class="date-input">
+                                <label for="end-time">To:</label>
+                                <input type="datetime-local" id="end-time">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="max-entries">Max Entries:</label>
+                        <select id="max-entries">
+                            <option value="100">100</option>
+                            <option value="500" selected>500</option>
+                            <option value="1000">1000</option>
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="actions-container">
+                    <button id="refresh-button" class="primary-button">Refresh</button>
+                    <button id="export-button" class="secondary-button">Export Logs</button>
+                    <button id="clear-button" class="danger-button">Clear Logs</button>
+                </div>
+            </section>
+            
+            <section class="logs-container">
+                <div class="log-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Logs:</span>
+                        <span id="total-logs" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Info:</span>
+                        <span id="info-logs" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Warnings:</span>
+                        <span id="warn-logs" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Errors:</span>
+                        <span id="error-logs" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Debug:</span>
+                        <span id="debug-logs" class="stat-value">0</span>
+                    </div>
+                </div>
+                
+                <div class="log-table-container">
+                    <table id="log-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Level</th>
+                                <th>Message</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="log-entries">
+                            <!-- Log entries will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="no-logs-message" class="no-logs-message" style="display: none;">
+                    No logs match your current filters
+                </div>
+                
+                <div class="pagination">
+                    <button id="prev-page" class="page-button" disabled>&laquo; Previous</button>
+                    <span id="page-info">Page 1 of 1</span>
+                    <button id="next-page" class="page-button" disabled>Next &raquo;</button>
+                </div>
+            </section>
+            
+            <div id="log-detail-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h3>Log Details</h3>
+                    <div class="detail-container">
+                        <div class="detail-item">
+                            <span class="detail-label">Timestamp:</span>
+                            <span id="detail-timestamp" class="detail-value"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Level:</span>
+                            <span id="detail-level" class="detail-value"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Message:</span>
+                            <span id="detail-message" class="detail-value"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Data:</span>
+                            <pre id="detail-data" class="detail-value json-view"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <a href="options.html" class="footer-link">Advanced Options</a>
+            <a href="popup.html" class="footer-link">Control Panel</a>
+            <span class="version">v3.0</span>
+        </footer>
+    </div>
+    
+    <script src="logs.js"></script>
+</body>
+</html>
