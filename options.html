@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nellis Auction Refund Handler - Options</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Nellis Auction Refund Handler</h1>
+            <h2>Advanced Configuration</h2>
+        </header>
+
+        <main>
+            <section class="config-section">
+                <h3>Timeout Settings</h3>
+                <div class="option-group">
+                    <label for="initialTimeout">Initial Timeout (ms):</label>
+                    <div class="input-with-info">
+                        <input type="number" id="initialTimeout" min="5000" max="120000" step="1000">
+                        <span class="info-tooltip" title="Time to wait before first retry attempt (default: 30000ms)">ⓘ</span>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <label for="retryTimeout">Retry Timeout (ms):</label>
+                    <div class="input-with-info">
+                        <input type="number" id="retryTimeout" min="5000" max="60000" step="1000">
+                        <span class="info-tooltip" title="Time to wait for first retry attempt (default: 10000ms)">ⓘ</span>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <label for="extendedTimeout">Extended Timeout (ms):</label>
+                    <div class="input-with-info">
+                        <input type="number" id="extendedTimeout" min="10000" max="120000" step="1000">
+                        <span class="info-tooltip" title="Time to wait for subsequent retry attempts (default: 20000ms)">ⓘ</span>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <label for="heartbeatInterval">Heartbeat Interval (ms):</label>
+                    <div class="input-with-info">
+                        <input type="number" id="heartbeatInterval" min="1000" max="30000" step="1000">
+                        <span class="info-tooltip" title="How often to check if processing is active (default: 5000ms)">ⓘ</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="config-section">
+                <h3>Error Recovery</h3>
+                <div class="option-group">
+                    <label for="maxRetries">Maximum Retry Attempts:</label>
+                    <div class="input-with-info">
+                        <input type="number" id="maxRetries" min="1" max="10" step="1">
+                        <span class="info-tooltip" title="Maximum number of retry attempts before skipping a refund (default: 3)">ⓘ</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="config-section">
+                <h3>Statistics</h3>
+                <div class="option-group">
+                    <button id="clearStats" class="danger-button">Clear All Statistics</button>
+                    <span class="info-tooltip" title="This will erase all stored statistics data">ⓘ</span>
+                </div>
+            </section>
+
+            <section class="config-section" id="stats-display">
+                <h3>Performance History</h3>
+                <div id="stats-summary">
+                    <div class="stat-group">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Refunds Processed:</span>
+                            <span id="total-processed" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Successful:</span>
+                            <span id="total-successful" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Failed:</span>
+                            <span id="total-failed" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Skipped:</span>
+                            <span id="total-skipped" class="stat-value">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-group">
+                        <div class="stat-item">
+                            <span class="stat-label">Success Rate:</span>
+                            <span id="success-rate" class="stat-value">0%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Average Processing Time:</span>
+                            <span id="avg-processing-time" class="stat-value">0s</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Runtime:</span>
+                            <span id="total-runtime" class="stat-value">0h 0m</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Retries:</span>
+                            <span id="total-retries" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="stats-chart-container">
+                    <canvas id="stats-chart"></canvas>
+                </div>
+            </section>
+        </main>
+
+        <div class="actions">
+            <button id="reset" class="secondary-button">Reset to Defaults</button>
+            <button id="save" class="primary-button">Save Settings</button>
+        </div>
+
+        <footer>
+            <div class="version">Version 2.0</div>
+            <div class="author">Created by Brice Blanchard</div>
+        </footer>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="options.js"></script>
+</body>
+</html>

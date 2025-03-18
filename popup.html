@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nellis Auction Refund Handler</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Refund Handler</h1>
+        
+        <div class="option-group">
+            <label for="date-range">Date Range:</label>
+            <div class="date-inputs">
+                <div class="date-input">
+                    <label for="start-date">Start:</label>
+                    <input type="date" id="start-date" name="start-date">
+                </div>
+                <div class="date-input">
+                    <label for="end-date">End:</label>
+                    <input type="date" id="end-date" name="end-date">
+                </div>
+            </div>
+        </div>
+        
+        <div class="option-group">
+            <label for="refund-limit">Skip Refunds Over ($):</label>
+            <input type="number" id="refund-limit" name="refund-limit" placeholder="500">
+        </div>
+        
+        <div class="option-group">
+            <label for="refunds-to-process">Number of Refunds to Process:</label>
+            <input type="number" id="refunds-to-process" name="refunds-to-process" placeholder="200">
+        </div>
+        
+        <div class="button-container">
+            <!-- These buttons will be shown/hidden based on extension state -->
+            <button id="start-button" class="action-button">Start Processing</button>
+            <button id="pause-button" class="action-button paused">Pause Processing</button>
+            <button id="resume-button" class="action-button">Resume Processing</button>
+            <button id="stop-button" class="action-button danger">Stop Processing</button>
+        </div>
+        
+        <div id="status-container">
+            <div id="status-indicator" class="not-running">
+                <span class="status-dot"></span>
+                <span id="status-text">Not Running</span>
+            </div>
+            <div id="progress-info"></div>
+        </div>
+        
+        <div id="statistics-container" class="hidden">
+            <h2>Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Processed:</span>
+                    <span id="stat-processed" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Successful:</span>
+                    <span id="stat-successful" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Skipped:</span>
+                    <span id="stat-skipped" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Failed:</span>
+                    <span id="stat-failed" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Avg. Time:</span>
+                    <span id="stat-avg-time" class="stat-value">0s</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Running Time:</span>
+                    <span id="stat-running-time" class="stat-value">0s</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <a href="options.html" target="_blank" id="options-link">Advanced Options</a>
+            <span class="version">v2.0</span>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
