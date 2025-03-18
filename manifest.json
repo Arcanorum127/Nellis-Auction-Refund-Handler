@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Nellis Auction Refund Handler",
-  "version": "2.0",
-  "description": "Automate the process of Nellis Auction refunds within defined constraints with robust error handling and statistics tracking.",
+  "version": "3.0",
+  "description": "Automate the process of Nellis Auction refunds with robust error handling, detailed logging, and statistics tracking.",
   "permissions": [
     "scripting",
     "activeTab",
@@ -13,7 +13,8 @@
     "https://cargo.nellisauction.com/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "icons": {
     "16": "icons/NA-RH-inactive-16x16.png",
@@ -34,7 +35,14 @@
   "content_scripts": [
     {
       "matches": ["https://cargo.nellisauction.com/*"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "type": "module"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["modules/*"],
+      "matches": ["https://cargo.nellisauction.com/*"]
     }
   ],
   "options_page": "options.html"
