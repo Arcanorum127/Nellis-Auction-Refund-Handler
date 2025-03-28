@@ -1,49 +1,20 @@
 {
-  "manifest_version": 3,
-  "name": "Nellis Auction Refund Handler",
-  "version": "3.0",
-  "description": "Automate the process of Nellis Auction refunds with robust error handling, detailed logging, and statistics tracking.",
-  "permissions": [
-    "scripting",
-    "activeTab",
-    "storage",
-    "notifications"
-  ],
-  "host_permissions": [
-    "https://cargo.nellisauction.com/*"
-  ],
-  "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "manifest_version": 3,
+    "name": "Nellis Auction Refund Handler C1",
+    "version": "1.4.1",
+    "description": "Automate the process of Nellis Auction refunds within defined constraints.",
+    "permissions": ["scripting", "activeTab"],
+    "host_permissions": ["<all_urls>"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "icons": {
+    "16": "icons/NA-ReturnsHandler-icon16x16.png",
+    "32": "icons/NA-ReturnsHandler-icon32x32.png",
+    "48": "icons/NA-ReturnsHandler-icon48x48.png",
+    "128": "icons/NA-ReturnsHandler-icon128x128.png"
   },
-  "icons": {
-    "16": "icons/NA-RH-inactive-16x16.png",
-    "32": "icons/NA-RH-inactive-32x32.png",
-    "48": "icons/NA-RH-inactive-48x48.png",
-    "128": "icons/NA-RH-inactive-128x128.png"
-  },
-  "action": {
-    "default_title": "Nellis Auction Refund Handler",
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icons/NA-RH-inactive-16x16.png",
-      "32": "icons/NA-RH-inactive-32x32.png",
-      "48": "icons/NA-RH-inactive-48x48.png",
-      "128": "icons/NA-RH-inactive-128x128.png"
+    "action": {
+      "default_title": "Initiate return handler"
     }
-  },
-  "content_scripts": [
-    {
-      "matches": ["https://cargo.nellisauction.com/*"],
-      "js": ["content.js"],
-      "type": "module"
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["modules/*"],
-      "matches": ["https://cargo.nellisauction.com/*"]
-    }
-  ],
-  "options_page": "options.html"
-}
+  }
