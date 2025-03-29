@@ -2,7 +2,7 @@
 Name: Brice Blanchard
 Date: 3/28/2025
 Project: Nellis Auction Refund Handler
-Version: 1.5.0
+Version: 1.7
 */
 
 // Initialization
@@ -196,21 +196,27 @@ function beginAwaitingRefunds(x) {
     console.log(`Found ${buttons.length} refund buttons`);
     
     // Using the exact pattern from your original script
-    if (buttons.length + redirectCount >= 7) {
-        if (x % 7 == 0) {
+    if (buttons.length + redirectCount >= 10) {
+        if (x % 10 == 0) {
             buttons[0 + redirectCount].click();
-        } else if (x % 7 == 1) {
+        } else if (x % 10 == 1) {
             buttons[1 + redirectCount].click();
-        } else if (x % 7 == 2) {
+        } else if (x % 10 == 2) {
             buttons[2 + redirectCount].click();
-        } else if (x % 7 == 3) {
+        } else if (x % 10 == 3) {
             buttons[3 + redirectCount].click();
-        } else if (x % 7 == 4) {
+        } else if (x % 10 == 4) {
             buttons[4 + redirectCount].click();
-        } else if (x % 7 == 5) {
+        } else if (x % 10 == 5) {
             buttons[5 + redirectCount].click();
-        } else if (x % 7 == 6) {
+        } else if (x % 10 == 6) {
             buttons[6 + redirectCount].click();
+        } else if (x % 10 == 7) {
+            buttons[7 + redirectCount].click();
+        } else if (x % 10 == 8) {
+            buttons[8 + redirectCount].click();
+        } else if (x % 10 == 9) {
+            buttons[9 + redirectCount].click();
         }
         return true;
     } else if (buttons.length > 0) {

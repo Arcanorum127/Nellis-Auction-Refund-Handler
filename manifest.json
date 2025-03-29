@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "Nellis Auction Refund Handler C1",
-    "version": "1.4.1",
+    "name": "Nellis Auction Refund Handler",
+    "version": "1.7",
     "description": "Automate the process of Nellis Auction refunds within defined constraints.",
     "permissions": ["scripting", "activeTab"],
     "host_permissions": ["<all_urls>"],
